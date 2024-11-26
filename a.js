@@ -1,3 +1,6 @@
+const rowNames = ["r", "s", "t", "p"]; 
+const colNames = ["x", "y", "z", "r", "s", "t"];
+
 const matrix = [
 
     [  2,    1,    0,    1,   0,   0,  10],
@@ -12,13 +15,29 @@ var basisValue = 0
 
 function printMatrix() {
     console.log("Matrix Visualization:");
-    for (let i = 0; i < matrix.length; i++) { // Loop through rows
+    
+    let colsName = ""
+
+    for (let j = 0; j < colNames.length; j++) 
+    { 
+        colsName += colNames[j].toString().padStart(6, " ");
+    }
+    
+    console.log(colsName); // Print the formatted row
+    
+    for (let i = 0; i < matrix.length; i++) 
+    {
         let row = "";
+
+        row += rowNames[i] + " ";
+
         for (let j = 0; j < matrix[i].length; j++) { // Loop through columns
             row += matrix[i][j].toString().padStart(4, " "); // Add each value, formatted
         }
         console.log(row); // Print the formatted row
     }
+
+    console.log();
 }
 
 function printColumns()
@@ -69,7 +88,7 @@ function findPivotRow()
 
     for (let row = 0; row < matrix.length - 1; row++) 
     {
-        let value = matrix[row][6] / matrix[row][basisCol];
+        let value = matrix[row][matrix[0].length - 1] / matrix[row][basisCol];
 
         if(value < lowest && value >= 0)
         {
@@ -80,6 +99,10 @@ function findPivotRow()
     }
 
     basisValue = matrix[basisRow][basisRow]
+
+    let oldRowValue = rowNames[basisRow];
+    rowNames[basisRow] = colNames[basisCol];
+    colNames[basisCol] = oldRowValue;
 }
 
 
@@ -156,6 +179,14 @@ function checkIfMoreZeors()
     return false;
 }
 
+function writeCoeficient()
+{
+    for (let index = 0; index < matrix.length; index++) {
+        console.log(rowNames[index] + " " + matrix[index][matrix[0].length - 1])
+    }
+}
+
+
 function iterate()
 {
     while(checkIfMoreZeors())
@@ -168,6 +199,10 @@ function iterate()
         
         printMatrix()
     }
+
+    writeCoeficient()
 }
+
+
 
 iterate();
