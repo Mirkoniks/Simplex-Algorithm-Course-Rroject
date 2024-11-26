@@ -14,6 +14,7 @@ var basisCol = 0
 var basisValue = 0
 
 function printMatrix() {
+
     console.log("Matrix Visualization:");
     
     let colsName = ""
@@ -23,7 +24,7 @@ function printMatrix() {
         colsName += colNames[j].toString().padStart(6, " ");
     }
     
-    console.log(colsName); // Print the formatted row
+    console.log(colsName); 
     
     for (let i = 0; i < matrix.length; i++) 
     {
@@ -31,10 +32,11 @@ function printMatrix() {
 
         row += rowNames[i] + " ";
 
-        for (let j = 0; j < matrix[i].length; j++) { // Loop through columns
-            row += matrix[i][j].toString().padStart(4, " "); // Add each value, formatted
+        for (let j = 0; j < matrix[i].length; j++)
+        { 
+            row += matrix[i][j].toString().padStart(4, " ");
         }
-        console.log(row); // Print the formatted row
+        console.log(row);
     }
 
     console.log();
@@ -42,12 +44,13 @@ function printMatrix() {
 
 function printColumns()
 {
-    for (let i = 0; i < matrix[0].length; i++) {
+    for (let i = 0; i < matrix[0].length; i++) 
+    {
         let row = "";
-        for (let y = 0; y < matrix.length; y++) {
-
-            row += matrix[y][i].toString().padStart(4, " "); // Add each value, formatted
             
+        for (let y = 0; y < matrix.length; y++) 
+        {
+            row += matrix[y][i].toString().padStart(4, " "); // Add each value, formatted
         }
 
         console.log(row);
@@ -62,10 +65,10 @@ function lowestInColumn()
 
     let lowest = Number.MAX_SAFE_INTEGER;
 
-    for (let col = 0; col < matrix[0].length; col++) {
-
-        for (let row = 0; row < matrix.length; row++) {
-
+    for (let col = 0; col < matrix[0].length; col++)
+    {
+        for (let row = 0; row < matrix.length; row++)
+        {
             if(matrix[row][col] < lowest)
             {
                 lowest = matrix[row][col];
@@ -108,10 +111,11 @@ function findPivotRow()
 
 function operation()
 {
-    for (let row = 0; row < matrix.length; row++) {
-        for (let col = 0; col < matrix[0].length; col++) {
-
-           if(row == basisRow)
+    for (let row = 0; row < matrix.length; row++)
+    {
+        for (let col = 0; col < matrix[0].length; col++) 
+        {
+            if(row == basisRow)
             {
                 matrix[row][col] /= basisValue
             }
@@ -124,19 +128,19 @@ function operation()
 function checkToSkipRow(array)
 {   
     if(array[basisCol] == 0)
-        {
-            return true;
-        }
+    {
+        return true;
+    }
 
-        return false;
+    return false;
 }
 
 function operation2()
 {
     let subValues = [];
     
-    for (let row = 0; row < matrix.length; row++) {
-
+    for (let row = 0; row < matrix.length; row++)
+    {
         if(matrix[row][basisCol] == 0)
         {
             subValues.push(1);
@@ -147,14 +151,15 @@ function operation2()
         }
     }        
 
-    for (let row = 0; row < matrix.length; row++) {
-
+    for (let row = 0; row < matrix.length; row++)
+    {
         if(checkToSkipRow(matrix[row]) || row == basisRow)
         {
             continue;
         }
         
-        for (let col = 0; col < matrix[0].length; col++) {
+        for (let col = 0; col < matrix[0].length; col++)
+        {
            
             matrix[row][col] += subValues[row] * matrix[basisRow][col];
         }        
@@ -166,9 +171,10 @@ function checkIfMoreZeors()
 {
     let half = Math.floor(matrix[0].length / 2)
 
-    for (let row = 0; row < matrix.length; row++) {
-
-        for (let col = 0; col < half; col++) {
+    for (let row = 0; row < matrix.length; row++)
+    {
+        for (let col = 0; col < half; col++)
+        {
             if(matrix[row][col] < 0)
             {
                 return true;
@@ -181,7 +187,8 @@ function checkIfMoreZeors()
 
 function writeCoeficient()
 {
-    for (let index = 0; index < matrix.length; index++) {
+    for (let index = 0; index < matrix.length; index++) 
+    {
         console.log(rowNames[index] + " " + matrix[index][matrix[0].length - 1])
     }
 }
@@ -202,7 +209,5 @@ function iterate()
 
     writeCoeficient()
 }
-
-
 
 iterate();
