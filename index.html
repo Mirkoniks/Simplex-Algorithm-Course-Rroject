@@ -104,6 +104,13 @@
     <div id="actionButtons">
         <button type="button" id="submitAll">Submit All</button>
         <button type="button" id="clearAll">Clear All</button>
+        <button type="button" id="generateTable">Generate Table</button>
+    </div>
+
+    <div class="form-container">
+        <table id="simplexTable" class="simplex-table">
+
+        </table>
     </div>
 
     <script>
@@ -123,7 +130,8 @@
                     const variable = match[2];
                     terms[variable] = coefficient;
                 }
-                expressionList.push([terms, rhsValue]);
+                terms["rhs"] = rhsValue; 
+                expressionList.push(terms);
             });
         }
 
@@ -155,6 +163,8 @@
             }
         }
 
+
+
         document.getElementById('submitAll').addEventListener('click', function() {
             targetExpressionParsed = [];
             constraintExpressionsParsed = [];
@@ -170,7 +180,9 @@
             console.log("Parsed Target Expression:", targetExpressionParsed);
             console.log("Parsed Constraints:", constraintExpressionsParsed);
 
-            alert("Expressions submitted! Check the console for parsed data.");
+            // alert("Expressions submitted! Check the console for parsed data.");
+
+            createTableBody();
         });
 
         document.getElementById('clearAll').addEventListener('click', function() {
@@ -184,6 +196,70 @@
             targetExpressionParsed = [];
             constraintExpressionsParsed = [];
 
+            console.log("Cleared all data.");
+        });
+
+        function createTableBody() 
+        {
+            const tbody = document.querySelector('#simplexTable');
+
+            tbody.innerHTML = ""
+
+            let headerRow = document.createElement('tr');
+
+            let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
+            const keys = Object.keys(targetExpressionParsed[0]);
+            const count = Object.keys(targetExpressionParsed[0]).length;
+
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            const value = targetExpressionParsed[0][key];
+
+                        
+            const th = document.createElement('th');    
+            th.innerHTML = key; 
+            letters = letters.filter(letter => letter !== key)
+            headerRow.appendChild(th); 
+
+            if(keys[i + 1] === "rhs")
+            {
+        
+                for (let j = 0; j < count - 1; j++)
+                {
+                    const th = document.createElement('th');   
+                    let addLetter = letters[0];
+                    console.log(addLetter);
+                    th.innerHTML = addLetter; 
+                    letters = letters.filter(letter => letter !== addLetter)
+                    headerRow.appendChild(th);     
+                }
+            }
+
+        }
+
+            // for (let key in targetExpressionParsed[0])
+            // {
+            //     if(key === "rhs")
+            //     {
+            //         break;
+            //     }
+
+            //     const th = document.createElement('th');
+                 
+            
+            //     headerRow.appendChild(th); 
+            // }
+
+            tbody.appendChild(headerRow);
+    
+            console.log(letters);
+        }
+
+        
+        document.getElementById('generateTable').addEventListener('click', function() {
+
+            createTableBody();
             console.log("Cleared all data.");
         });
 
