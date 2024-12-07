@@ -3,9 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Simplex Algorithm Inputs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-container {
+            width: 60%;
+            margin: 0 auto;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .constraints {
+            margin-top: 20px;
+        }
+
+        .constraint-inputs {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .constraint-inputs input {
+            flex: 1;
+        }
+
+        .remove-btn {
+            margin-left: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+
+        .remove-btn:hover {
+            background-color: darkred;
+        }
+
+        #actionButtons {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <p>hello</p>
+
+    <h1>Simplex Algorithm - Input Form</h1>
+
+    <div class="form-container">
+        <form id="targetForm">
+            <label for="targetExpression">Target Expression:</label>
+            <input type="text" id="targetExpression" name="targetExpression" placeholder="e.g., 5x + 3y + 2z">
+        </form>
+    </div>
+
+    <div class="form-container">
+        <form id="constraintsForm">
+            <label for="constraintExpression">Constraint Expressions:</label>
+            <div id="constraints" class="constraints">
+                <div class="constraint-inputs">
+                    <input type="text" name="constraintExpression" placeholder="e.g., x + y <= 10">
+                    <button type="button" class="remove-btn" onclick="removeConstraint(this)">Remove</button>
+                </div>
+            </div>
+            <button type="button" id="addConstraint">Add Another Constraint</button>
+        </form>
+    </div>
+
+    <div id="actionButtons">
+        <button type="button" id="submitAll">Submit All</button>
+        <button type="button" id="clearAll">Clear All</button>
+    </div>
+
+    <script>
+        let targetExpressionParsed = [];
+        let constraintExpressionsParsed = [];
+
+        function parseExpresion(equations, expressionList) {
+            equations.forEach((equation) => {
+                const c = equation.trim().replace(/\s+/g, ''); // Trim and remove spaces
+                const regex = /([+-]?\d*)([a-zA-Z]+)/g;
+                const [lhs, rhs] = c.split('=');
+                const rhsValue = parseFloat(rhs);
+                let terms = {};
+                let match;
+                while ((match = regex.exec(lhs)) !== null) {
+                    const coefficient = match[1] === '' || match[1] === '+' ? 1 : (match[1] === '-' ? -1 : parseInt(match[1]));
+                    const variable = match[2];
+                    terms[variable] = coefficient;
+                }
+                expressionList.push([terms, rhsValue]);
+            });
+        }
+
+        document.getElementById('addConstraint').addEventListener('click', function() {
+            const newConstraint = document.createElement('div');
+            newConstraint.classList.add('constraint-inputs');
+            newConstraint.innerHTML = `
+                <input type="text" name="constraintExpression" placeholder="e.g., x + y <= 10">
+                <button type="button" class="remove-btn" onclick="removeConstraint(this)">Remove</button>`;
+            document.getElementById('constraints').appendChild(newConstraint);
+            toggleRemoveButtons();
+        });
+
+        function removeConstraint(button) {
+            const constraintInputs = document.getElementById('constraints');
+            if (constraintInputs.children.length > 1) {
+                const constraintInput = button.parentElement;
+                constraintInputs.removeChild(constraintInput);
+                toggleRemoveButtons();
+            }
+        }
+
+        function toggleRemoveButtons() {
+            const removeButtons = document.querySelectorAll('.remove-btn');
+            if (removeButtons.length === 1) {
+                removeButtons[0].style.display = 'none';
+            } else {
+                removeButtons.forEach(btn => btn.style.display = 'inline-block');
+            }
+        }
+
+        document.getElementById('submitAll').addEventListener('click', function() {
+            targetExpressionParsed = [];
+            constraintExpressionsParsed = [];
+
+            const targetExpression = document.getElementById('targetExpression').value;
+            if (targetExpression.trim()) {
+                parseExpresion([targetExpression], targetExpressionParsed);
+            }
+
+            const constraints = Array.from(document.querySelectorAll('[name="constraintExpression"]')).map(input => input.value);
+            parseExpresion(constraints, constraintExpressionsParsed);
+
+            console.log("Parsed Target Expression:", targetExpressionParsed);
+            console.log("Parsed Constraints:", constraintExpressionsParsed);
+
+            alert("Expressions submitted! Check the console for parsed data.");
+        });
+
+        document.getElementById('clearAll').addEventListener('click', function() {
+            document.getElementById('targetExpression').value = '';
+            document.getElementById('constraints').innerHTML = `
+                <div class="constraint-inputs">
+                    <input type="text" name="constraintExpression" placeholder="e.g., x + y <= 10">
+                    <button type="button" class="remove-btn" onclick="removeConstraint(this)">Remove</button>
+                </div>`;
+            toggleRemoveButtons();
+            targetExpressionParsed = [];
+            constraintExpressionsParsed = [];
+
+            console.log("Cleared all data.");
+        });
+
+        toggleRemoveButtons();
+    </script>
+
 </body>
 </html>
