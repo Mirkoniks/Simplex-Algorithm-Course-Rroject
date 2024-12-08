@@ -114,8 +114,15 @@
     </div>
 
     <script>
+        let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
         let targetExpressionParsed = [];
         let constraintExpressionsParsed = [];
+
+        let colNames = []; 
+        let rowNames = []; 
+
+        let matrix =[];
 
         function parseExpresion(equations, expressionList) {
             equations.forEach((equation) => {
@@ -130,7 +137,7 @@
                     const variable = match[2];
                     terms[variable] = coefficient;
                 }
-                terms["rhs"] = rhsValue; 
+                terms["Value"] = rhsValue; 
                 expressionList.push(terms);
             });
         }
@@ -181,8 +188,14 @@
             console.log("Parsed Constraints:", constraintExpressionsParsed);
 
             // alert("Expressions submitted! Check the console for parsed data.");
+            
+            createTableHeader();
+            createTableRows();
+            
+            console.log(colNames);
+            console.log(rowNames);
 
-            createTableBody();
+            console.log(matrix);
         });
 
         document.getElementById('clearAll').addEventListener('click', function() {
@@ -199,61 +212,153 @@
             console.log("Cleared all data.");
         });
 
-        function createTableBody() 
+        
+        function addEmptyCol(row)
+        {
+            const th = document.createElement('td');    
+            th.innerHTML = " "; 
+            row.appendChild(th);
+        }
+
+        function createTableRows()
+        {
+            const addLettersStartIndex = colNames.length / 2;
+            rowNames = [];
+            let rowCounter = 0;
+
+            const tbody = document.querySelector('#simplexTable');
+
+            for (let i = addLettersStartIndex; i < colNames.length; i++) 
+            {
+                let rowInMatrx = [];
+
+
+                const headerRow = document.createElement('tr');
+
+                const th = document.createElement('td');    
+                th.innerHTML = colNames[i]; 
+                headerRow.appendChild(th);
+                rowNames.push(colNames[i]);
+
+                for (let j = 0; j < addLettersStartIndex; j++) 
+                {
+                    const th = document.createElement('td');    
+                    th.innerHTML = constraintExpressionsParsed[j][colNames[j]]; 
+                    headerRow.appendChild(th);
+                    rowInMatrx.push(constraintExpressionsParsed[j][colNames[j]]);
+                }
+
+                for (let j = addLettersStartIndex; j < colNames.length; j++) 
+                {
+                    const th = document.createElement('td');    
+                    th.innerHTML = 1; 
+                    headerRow.appendChild(th);
+                    rowInMatrx.push(1);
+                }
+
+                const valueTh = document.createElement('td');    
+                valueTh.innerHTML = constraintExpressionsParsed[rowCounter]["Value"];
+                headerRow.appendChild(valueTh);
+                rowInMatrx.push(constraintExpressionsParsed[rowCounter]["Value"]);
+                rowCounter++; 
+                matrix.push(rowInMatrx);
+
+                tbody.appendChild(headerRow);                 
+            }
+
+
+
+            const headerRow = document.createElement('tr');
+
+            const th = document.createElement('td');    
+            th.innerHTML = "p"; 
+            headerRow.appendChild(th);
+            rowNames.push("p")
+            letters = letters.filter(letter => letter !== "p")
+
+            
+            let rowInMatrx = [];
+
+
+            for (const key in targetExpressionParsed[0]) {
+                if (Object.prototype.hasOwnProperty.call(targetExpressionParsed[0], key)) {
+                    const element = targetExpressionParsed[0][key];
+
+                    if(key === "Value")
+                    {
+                        for (let j = addLettersStartIndex; j < colNames.length; j++) 
+                        {
+                            const th = document.createElement('td');    
+                            th.innerHTML = 0; 
+                            headerRow.appendChild(th);
+                            rowInMatrx.push(0);
+                        }       
+                    }
+                    
+                    const th = document.createElement('td');    
+                    th.innerHTML = element; 
+                    rowInMatrx.push(element);
+                    headerRow.appendChild(th);       
+                }
+            }
+
+            matrix.push(rowInMatrx);
+            
+
+            
+            tbody.appendChild(headerRow);  
+                  
+
+        }
+
+
+        function createTableHeader() 
         {
             const tbody = document.querySelector('#simplexTable');
 
-            tbody.innerHTML = ""
+            tbody.innerHTML = "";
+            colNames = [];
 
             let headerRow = document.createElement('tr');
-
-            let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
             const keys = Object.keys(targetExpressionParsed[0]);
             const count = Object.keys(targetExpressionParsed[0]).length;
 
-        for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            const value = targetExpressionParsed[0][key];
+            addEmptyCol(headerRow);
 
-                        
-            const th = document.createElement('th');    
-            th.innerHTML = key; 
-            letters = letters.filter(letter => letter !== key)
-            headerRow.appendChild(th); 
-
-            if(keys[i + 1] === "rhs")
+            for (let i = 0; i < keys.length; i++)
             {
-        
-                for (let j = 0; j < count - 1; j++)
+                const key = keys[i];
+                const value = targetExpressionParsed[0][key];
+
+                const th = document.createElement('th');    
+                th.innerHTML = key; 
+                letters = letters.filter(letter => letter !== key)
+                headerRow.appendChild(th);
+
+                if(key !== "Value")
                 {
-                    const th = document.createElement('th');   
-                    let addLetter = letters[0];
-                    console.log(addLetter);
-                    th.innerHTML = addLetter; 
-                    letters = letters.filter(letter => letter !== addLetter)
-                    headerRow.appendChild(th);     
+                    colNames.push(key); 
                 }
+
+                if(keys[i + 1] === "Value")
+                {
+                
+                    for (let j = 0; j < count - 1; j++)
+                    {
+                        const th = document.createElement('th');   
+                        let addLetter = letters[0];
+                        th.innerHTML = addLetter; 
+                        letters = letters.filter(letter => letter !== addLetter)
+                        headerRow.appendChild(th);     
+                        colNames.push(addLetter); 
+
+                    }
+                }
+
             }
 
-        }
-
-            // for (let key in targetExpressionParsed[0])
-            // {
-            //     if(key === "rhs")
-            //     {
-            //         break;
-            //     }
-
-            //     const th = document.createElement('th');
-                 
-            
-            //     headerRow.appendChild(th); 
-            // }
-
             tbody.appendChild(headerRow);
-    
-            console.log(letters);
         }
 
         
