@@ -189,7 +189,7 @@
 
         function parseExpresion(equations, expressionList) {
             equations.forEach((equation) => {
-                const c = equation.trim().replace(/\s+/g, ''); // Trim and remove spaces
+                const c = equation.trim().replace(/\s+/g, ''); 
                 const regex = /([+-]?\d*)([a-zA-Z]+)/g;
                 const [lhs, rhs] = c.split('=');
                 const rhsValue = parseFloat(rhs);

@@ -14,12 +14,10 @@ function addEmptyCol(row)
 
 
 function printMatrix() {
-    // Get the div container
     const container = document.getElementById("tables");
 
-    // Create a new table element
     const table = document.createElement("table");
-    table.classList.add("simplex-table"); // Add CSS class for styling
+    table.classList.add("simplex-table");   
 
     table.innerHTML = "";
 
@@ -60,16 +58,13 @@ function printMatrix() {
 
 
 
-    // Create rows for the matrix
     for (let i = 0; i < matrix.length; i++) {
         const row = document.createElement("tr");
 
-        // Add row name as the first cell
         const rowHeader = document.createElement("th");
         rowHeader.textContent = rowNames[i];
         row.appendChild(rowHeader);
 
-        // Add matrix values as cells
         for (let j = 0; j < matrix[i].length; j++) {
             const cell = document.createElement("td");
             cell.textContent = matrix[i][j];
@@ -79,7 +74,6 @@ function printMatrix() {
         table.appendChild(row);
     }
 
-    // Append the newly created table to the div
     container.appendChild(table);
 }
 
@@ -93,7 +87,7 @@ function printColumns()
             
         for (let y = 0; y < matrix.length; y++) 
         {
-            row += matrix[y][i].toString().padStart(4, " "); // Add each value, formatted
+            row += matrix[y][i].toString().padStart(4, " ");
         }
 
         console.log(row);
