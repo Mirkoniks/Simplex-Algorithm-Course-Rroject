@@ -75,54 +75,117 @@
             margin-top: 20px;
             text-align: center;
         }
+
+        /* General container styling */
+.form-container {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: 800px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+}
+
+/* Table styling */
+.simplex-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.simplex-table th, .simplex-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.simplex-table th {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+.simplex-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.simplex-table tr:hover {
+    background-color: #e1f5fe;
+}
+
+.simplex-table td {
+    color: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-container {
+        padding: 10px;
+    }
+
+    .simplex-table th, .simplex-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+}
+
     </style>
 </head>
 <body>
 
-    <h1>Simplex Algorithm - Input Form</h1>
+    <h1>Симплекс Алгоритъм</h1>
 
     <div class="form-container">
         <form id="targetForm">
-            <label for="targetExpression">Target Expression:</label>
+            <label for="targetExpression">Целева функция:</label>
             <input type="text" id="targetExpression" name="targetExpression" placeholder="e.g., 5x + 3y + 2z">
         </form>
     </div>
 
     <div class="form-container">
         <form id="constraintsForm">
-            <label for="constraintExpression">Constraint Expressions:</label>
+            <label for="constraintExpression">Ограничения:</label>
             <div id="constraints" class="constraints">
                 <div class="constraint-inputs">
                     <input type="text" name="constraintExpression" placeholder="e.g., x + y <= 10">
-                    <button type="button" class="remove-btn" onclick="removeConstraint(this)">Remove</button>
+                    <button type="button" class="remove-btn" onclick="removeConstraint(this)">Премхни</button>
                 </div>
             </div>
-            <button type="button" id="addConstraint">Add Another Constraint</button>
+            <button type="button" id="addConstraint">Добави константа</button>
         </form>
     </div>
 
     <div id="actionButtons">
-        <button type="button" id="submitAll">Submit All</button>
-        <button type="button" id="clearAll">Clear All</button>
-        <button type="button" id="generateTable">Generate Table</button>
+        <button type="button" id="submitAll">Реши</button>
+        <button type="button" id="clearAll">Изчисти всичко</button>
     </div>
 
-    <div class="form-container">
+    <div id="tables" class="form-container">
         <table id="simplexTable" class="simplex-table">
 
         </table>
     </div>
 
+
+    
     <script>
         let letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
         let targetExpressionParsed = [];
         let constraintExpressionsParsed = [];
 
-        let colNames = []; 
-        let rowNames = []; 
+        let rowNames = ["r", "s", "t", "p"]; 
+        let colNames = ["x", "y", "z", "r", "s", "t"];
 
-        let matrix =[];
+        let matrix = [
+
+    [  2,    1,    0,    1,   0,   0,  10],
+    [  0,    2,    1,    0,   1,   0,  20],
+    [  1,    0,    2,    0,   0,   1,  30],
+    [ -3,   -4, -  5,    0,   0,   0,   0],
+];
 
         function parseExpresion(equations, expressionList) {
             equations.forEach((equation) => {
@@ -189,6 +252,8 @@
 
             // alert("Expressions submitted! Check the console for parsed data.");
             
+            initAlphabet();
+
             createTableHeader();
             createTableRows();
             
@@ -196,6 +261,8 @@
             console.log(rowNames);
 
             console.log(matrix);
+
+            iterate(matrix);
         });
 
         document.getElementById('clearAll').addEventListener('click', function() {
@@ -205,13 +272,21 @@
                     <input type="text" name="constraintExpression" placeholder="e.g., x + y <= 10">
                     <button type="button" class="remove-btn" onclick="removeConstraint(this)">Remove</button>
                 </div>`;
+
             toggleRemoveButtons();
+
             targetExpressionParsed = [];
             constraintExpressionsParsed = [];
+            initAlphabet();
 
             console.log("Cleared all data.");
         });
 
+
+        function initAlphabet()
+        {
+            letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+        }
         
         function addEmptyCol(row)
         {
@@ -223,8 +298,10 @@
         function createTableRows()
         {
             const addLettersStartIndex = colNames.length / 2;
+            console.log(addLettersStartIndex);
             rowNames = [];
             let rowCounter = 0;
+            matrix = [];
 
             const tbody = document.querySelector('#simplexTable');
 
@@ -242,18 +319,27 @@
 
                 for (let j = 0; j < addLettersStartIndex; j++) 
                 {
-                    const th = document.createElement('td');    
-                    th.innerHTML = constraintExpressionsParsed[j][colNames[j]]; 
-                    headerRow.appendChild(th);
-                    rowInMatrx.push(constraintExpressionsParsed[j][colNames[j]]);
+
+                        const th = document.createElement('td');    
+                        th.innerHTML = constraintExpressionsParsed[i - addLettersStartIndex][colNames[j]];
+                        headerRow.appendChild(th);
+                        rowInMatrx.push(constraintExpressionsParsed[i - addLettersStartIndex][colNames[j]]);             
                 }
+
 
                 for (let j = addLettersStartIndex; j < colNames.length; j++) 
                 {
+                    let element = 0;
+
+                    if(rowCounter == j - addLettersStartIndex)
+                    {
+                        element = 1
+                    }
+
                     const th = document.createElement('td');    
-                    th.innerHTML = 1; 
+                    th.innerHTML = element; 
                     headerRow.appendChild(th);
-                    rowInMatrx.push(1);
+                    rowInMatrx.push(element);
                 }
 
                 const valueTh = document.createElement('td');    
@@ -362,14 +448,11 @@
         }
 
         
-        document.getElementById('generateTable').addEventListener('click', function() {
 
-            createTableBody();
-            console.log("Cleared all data.");
-        });
 
         toggleRemoveButtons();
     </script>
 
+    <script src="solver.js"></script>
 </body>
 </html>
