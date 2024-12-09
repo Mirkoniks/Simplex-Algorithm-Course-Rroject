@@ -1,46 +1,89 @@
-const rowNames = ["r", "s", "t", "p"]; 
-const colNames = ["x", "y", "z", "r", "s", "t"];
 
-let matrix = [
-
-    [  2,    1,    0,    1,   0,   0,  10],
-    [  0,    2,    1,    0,   1,   0,  20],
-    [  1,    0,    2,    0,   0,   1,  30],
-    [ -3,   -4, -  5,    0,   0,   0,   0],
-];
 
 var basisRow = 0
 var basisCol = 0
 var basisValue = 0
 
-function printMatrix() {
-
-    console.log("Matrix Visualization:");
-    
-    let colsName = ""
-
-    for (let j = 0; j < colNames.length; j++) 
-    { 
-        colsName += colNames[j].toString().padStart(6, " ");
-    }
-    
-    console.log(colsName); 
-    
-    for (let i = 0; i < matrix.length; i++) 
-    {
-        let row = "";
-
-        row += rowNames[i] + " ";
-
-        for (let j = 0; j < matrix[i].length; j++)
-        { 
-            row += matrix[i][j].toString().padStart(4, " ");
-        }
-        console.log(row);
-    }
-
-    console.log();
+function addEmptyCol(row)
+{
+    const th = document.createElement('td');    
+    th.innerHTML = " "; 
+    row.appendChild(th);
 }
+
+
+
+function printMatrix() {
+    // Get the div container
+    const container = document.getElementById("tables");
+
+    // Create a new table element
+    const table = document.createElement("table");
+    table.classList.add("simplex-table"); // Add CSS class for styling
+
+    table.innerHTML = "";
+
+    let headerRow = document.createElement('tr');
+
+    const keys = Object.keys(targetExpressionParsed[0]);
+    const count = Object.keys(targetExpressionParsed[0]).length;
+
+    addEmptyCol(headerRow);
+
+    addedLettersIndexStart = colNames.length / 2
+
+    for (let i = 0; i < keys.length; i++)
+    {
+        const key = keys[i];
+        const value = targetExpressionParsed[0][key];
+
+        const th = document.createElement('th');    
+        th.innerHTML = key; 
+        headerRow.appendChild(th);
+
+        if(keys[i + 1] === "Value")
+        {
+        
+            for (let j = addedLettersIndexStart; j < colNames.length; j++)
+            {
+                const th = document.createElement('th');   
+                let addLetter = colNames[j];
+                th.innerHTML = addLetter; 
+                headerRow.appendChild(th);     
+
+            }
+        }
+
+    }
+
+    table.appendChild(headerRow);
+
+
+
+    // Create rows for the matrix
+    for (let i = 0; i < matrix.length; i++) {
+        const row = document.createElement("tr");
+
+        // Add row name as the first cell
+        const rowHeader = document.createElement("th");
+        rowHeader.textContent = rowNames[i];
+        row.appendChild(rowHeader);
+
+        // Add matrix values as cells
+        for (let j = 0; j < matrix[i].length; j++) {
+            const cell = document.createElement("td");
+            cell.textContent = matrix[i][j];
+            row.appendChild(cell);
+        }
+
+        table.appendChild(row);
+    }
+
+    // Append the newly created table to the div
+    container.appendChild(table);
+}
+
+
 
 function printColumns()
 {
@@ -169,7 +212,7 @@ function operation2()
 
 function checkIfMoreZeors()
 {
-    let half = Math.floor(matrix[0].length / 2)
+    let half = Math.floor(matrix[0].length / 2);
 
     for (let row = 0; row < matrix.length; row++)
     {
@@ -194,8 +237,11 @@ function writeCoeficient()
 }
 
 
-function iterate()
+function iterate(matrix)
 {
+    this.matrix = matrix;
+
+
     while(checkIfMoreZeors())
     {
         findPivotRow()
@@ -210,4 +256,3 @@ function iterate()
     writeCoeficient()
 }
 
-iterate();
