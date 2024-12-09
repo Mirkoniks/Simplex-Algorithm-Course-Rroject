@@ -209,7 +209,7 @@
             const newConstraint = document.createElement('div');
             newConstraint.classList.add('constraint-inputs');
             newConstraint.innerHTML = `
-                <input type="text" name="constraintExpression" placeholder="e.g., x + y <= 10">
+                <input type="text" name="constraintExpression">
                 <button type="button" class="remove-btn" onclick="removeConstraint(this)">Remove</button>`;
             document.getElementById('constraints').appendChild(newConstraint);
             toggleRemoveButtons();
